@@ -60,14 +60,14 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
 
       for (let i = 0; i < itemlist.length; i++) {
         for (let j = 0; j < findITEMs.length; j++) {
-          if(itemlist[i] === findITEMs[j]['masterID']){
+          if (itemlist[i] === findITEMs[j]['masterID']) {
             itemobject[itemlist[i]] = findITEMs[j]['ITEMs'];
             break;
           }
-          
+
         }
 
-        
+
       }
 
       if (findMATCP.length > 0) {
@@ -76,28 +76,29 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
 
         for (let M = 0; M < findMATCP.length; M++) {
 
-        let dataobject = {};
-        let datamaster = findMATCP[M];
+          let dataobject = {};
+          let datamaster = findMATCP[M];
           for (let i = 0; i < inslist.length; i++) {
-            
+
             for (let j = 0; j < itemlist.length; j++) {
-            
-              if(datamaster['FINAL'][inslist[i]] != undefined){
+
+              if (datamaster['FINAL'][inslist[i]] != undefined) {
                 if (datamaster['FINAL'][inslist[i]][itemlist[j]] != undefined) {
                   dataobject['PO'] = datamaster['PO'];
-                  dataobject[itemlist[j]] = { 
-                    "name":itemobject[itemlist[j]],
-                    "itemcode":itemlist[j],
-                    "data":datamaster['FINAL'][inslist[i]][itemlist[j]]
+                  dataobject[itemlist[j]] = {
+                    "name": itemobject[itemlist[j]],
+                    "itemcode": itemlist[j],
+                    "itemlist":itemlist,
+                    "data": datamaster['FINAL'][inslist[i]][itemlist[j]]
                   }
-  
-            
+
+
                 }
               }
-              
+
 
             }
-       
+
           }
           dataolist.push(dataobject)
         }
