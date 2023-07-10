@@ -85,9 +85,10 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
               if (datamaster['FINAL'][inslist[i]] != undefined) {
                 if (datamaster['FINAL'][inslist[i]][itemlist[j]] != undefined) {
                   dataobject['PO'] = datamaster['PO'];
+                  dataobject["itemcode"]= itemlist[j],
                   dataobject[itemlist[j]] = {
                     "name": itemobject[itemlist[j]],
-                    "itemcode": itemlist[j],
+               
                     "itemlist":itemlist,
                     "data": datamaster['FINAL'][inslist[i]][itemlist[j]]
                   }
