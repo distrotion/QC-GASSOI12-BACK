@@ -28,6 +28,7 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
   let itemobject = {};
   // let dataobject = {};
   let dataolist = [];
+  let RESULTFORMATitem = {};
 
 
   if (input['MATCP'] != undefined) {
@@ -54,7 +55,6 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
       let data = findPATTERN[0]['FINAL'];
       for (let i = 0; i < data.length; i++) {
         itemlist.push(data[i]['ITEMs']);
-
       }
 
 
@@ -62,6 +62,8 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
         for (let j = 0; j < findITEMs.length; j++) {
           if (itemlist[i] === findITEMs[j]['masterID']) {
             itemobject[itemlist[i]] = findITEMs[j]['ITEMs'];
+            RESULTFORMATitem[itemlist[i]] = findITEMs[j]['RESULTFORMAT'];
+            //RESULTFORMATitem
             break;
           }
 
@@ -69,6 +71,8 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
 
 
       }
+
+      
 
       if (findMATCP.length > 0) {
 
@@ -83,15 +87,80 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
             for (let j = 0; j < itemlist.length; j++) {
 
               if (datamaster['FINAL'][inslist[i]] != undefined) {
+
+
                 if (datamaster['FINAL'][inslist[i]][itemlist[j]] != undefined) {
-                  dataobject['PO'] = datamaster['PO'];
-                  dataobject["itemlist"]=itemlist,
-                  dataobject[itemlist[j]] = {
-                    "name": itemobject[itemlist[j]],
-                    "itemcode": itemlist[j],
-                    "itemlist":itemlist,
-                    "data": datamaster['FINAL'][inslist[i]][itemlist[j]]
+                  if(RESULTFORMATitem[itemlist[j]] !== 'Text' && RESULTFORMATitem[itemlist[j]] !== 'OCR' && RESULTFORMATitem[itemlist[j]] !== 'Picture'){
+
+                    //----------------------------------------------------------------------------------------
+
+                    if(RESULTFORMATitem[itemlist[j]] === 'Number' ){
+
+                      dataobject['PO'] = datamaster['PO'];
+                      dataobject["itemlist"]=itemlist,
+           
+                      subpicdata = Object.keys(datamaster['FINAL'][inslist[i]][itemlist[j]])
+                      let datasetraw = [];
+                      if(subpicdata.length>0){
+                
+                        for (let k = 0; k < subpicdata.length; k++) {
+                          let datainside = datamaster['FINAL'][inslist[i]][itemlist[j]][subpicdata[k]];
+                          let datasetrawin = [];
+                          for (let v = 0; v < datainside.length; v++) {
+                            datasetrawin.push(datainside[v]['PO3']);
+                            // console.log(datainside)
+                            
+                          }
+                          datasetraw.push(datasetrawin);
+                        }
+                      }
+
+                      dataobject[itemlist[j]] = {
+                        "name": itemobject[itemlist[j]],
+                        "itemcode": itemlist[j],
+                        'RESULTFORMAT' : RESULTFORMATitem[itemlist[j]],
+                        // "data": datamaster['FINAL'][inslist[i]][itemlist[j]],
+                        "data":datasetraw,
+                        "data_ans":datamaster['FINAL_ANS'][itemlist[j]],
+                      }
+
+                    }else if(RESULTFORMATitem[itemlist[j]] === 'Graph' ){
+
+                      dataobject['PO'] = datamaster['PO'];
+                      dataobject["itemlist"]=itemlist,
+
+                      subpicdata = Object.keys(datamaster['FINAL'][inslist[i]][itemlist[j]])
+                      let datasetraw = [];
+                      if(subpicdata.length>0){
+                
+                        for (let k = 0; k < subpicdata.length; k++) {
+                          let datainside = datamaster['FINAL'][inslist[i]][itemlist[j]][subpicdata[k]];
+                          let datasetrawin = [];
+                          for (let v = 0; v < datainside.length; v++) {
+                            datasetrawin.push(datainside[v]['PO3']);
+                            // console.log(datainside)
+                            
+                          }
+                          datasetraw.push(datasetrawin);
+                        }
+                      }
+
+                      dataobject[itemlist[j]] = {
+                        "name": itemobject[itemlist[j]],
+                        "itemcode": itemlist[j],
+                        'RESULTFORMAT' : RESULTFORMATitem[itemlist[j]],
+                        "data":datasetraw,
+                        "data_ans": datamaster['FINAL_ANS'][itemlist[j]+'_point'],
+        
+                      }
+
+                    }
+
+                   
+
+                    //----------------------------------------------------------------------------------------
                   }
+                 
 
 
                 }
