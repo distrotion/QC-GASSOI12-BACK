@@ -45,7 +45,7 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
     }
 
     let findITEMs = await mongodb.find(master_FN, ITEMs, {});
-    let findMATCP = await mongodb.find(MAIN_DATA, MAIN, { "MATCP": input['MATCP'], "dateG": date });
+    let findMATCP = await mongodb.find(MAIN_DATA, MAIN, { "MATCP": input['MATCP'], "ALL_DONE": "DONE", "dateG": date });
     let findPATTERN = await mongodb.find(PATTERN, PATTERN_01, { "CP": input['MATCP'] });
 
 
