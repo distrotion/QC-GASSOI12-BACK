@@ -31,13 +31,13 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
   let RESULTFORMATitem = {};
 
 
-  if (input['MATCP'] != undefined) {
+  if (input['MATCP'] != undefined && input['STARTyear'] != undefined && input['STARTmonth'] != undefined && input['STARTday'] != undefined && input['ENDyear'] != undefined && input['ENDmonth'] != undefined && input['ENDday'] != undefined ) {
 
     let d = new Date();
-    d.setFullYear(2023, 3, 1);
+    d.setFullYear(input['STARTyear'], input['STARTmonth'] , input['STARTday'] );
 
     let dc = new Date();
-    dc.setFullYear(2023, 6, 1);
+    dc.setFullYear(input['ENDyear'] ,  input['ENDmonth'], input['ENDday']);
 
     let date = {
       "$gte": d,
