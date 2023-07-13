@@ -24,20 +24,23 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
   let input = req.body;
   let output = {};
   let itemlist = [];
-  let inslist = [];
+  // let inslist = [];
   let itemobject = {};
   // let dataobject = {};
   let dataolist = [];
   let RESULTFORMATitem = {};
 
 
-  if (input['MATCP'] != undefined && input['STARTyear'] != undefined && input['STARTmonth'] != undefined && input['STARTday'] != undefined && input['ENDyear'] != undefined && input['ENDmonth'] != undefined && input['ENDday'] != undefined ) {
+  if (input['MATCP'] != undefined && input['STARTyear'] != undefined && input['STARTmonth'] != undefined && input['STARTday'] != undefined && input['ENDyear'] != undefined && input['ENDmonth'] != undefined && input['ENDday'] != undefined) {
 
     let d = new Date();
-    d.setFullYear(input['STARTyear'], input['STARTmonth'] , input['STARTday'] );
+    d.setFullYear(input['STARTyear'], `${parseInt(input['STARTmonth']) - 1}`, input['STARTday']);
 
     let dc = new Date();
-    dc.setFullYear(input['ENDyear'] ,  input['ENDmonth'], input['ENDday']);
+    dc.setFullYear(input['ENDyear'], `${parseInt(input['ENDmonth']) - 1}`, input['ENDday']);
+
+    console.log(d)
+    console.log(dc)
 
     let date = {
       "$gte": d,
@@ -46,6 +49,7 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
 
     let findITEMs = await mongodb.find(master_FN, ITEMs, {});
     let findMATCP = await mongodb.find(MAIN_DATA, MAIN, { "MATCP": input['MATCP'], "ALL_DONE": "DONE", "dateG": date });
+    // let findMATCP = await mongodb.find(MAIN_DATA, MAIN, { "MATCP": input['MATCP'] });
     let findPATTERN = await mongodb.find(PATTERN, PATTERN_01, { "CP": input['MATCP'] });
 
 
@@ -72,14 +76,14 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
 
       }
 
-      
+
 
       if (findMATCP.length > 0) {
 
-        inslist = Object.keys(findMATCP[0]['FINAL']);
+        // inslist = Object.keys(findMATCP[0]['FINAL']);
 
         for (let M = 0; M < findMATCP.length; M++) {
-
+          let inslist = Object.keys(findMATCP[M]['FINAL']);
           let dataobject = {};
           let datamaster = findMATCP[M];
           for (let i = 0; i < inslist.length; i++) {
@@ -90,26 +94,35 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
 
 
                 if (datamaster['FINAL'][inslist[i]][itemlist[j]] != undefined) {
-                  if(RESULTFORMATitem[itemlist[j]] !== 'Text' && RESULTFORMATitem[itemlist[j]] !== 'OCR' && RESULTFORMATitem[itemlist[j]] !== 'Picture'){
+                  if (RESULTFORMATitem[itemlist[j]] !== 'Text' && RESULTFORMATitem[itemlist[j]] !== 'OCR' && RESULTFORMATitem[itemlist[j]] !== 'Picture') {
 
                     //----------------------------------------------------------------------------------------
 
-                    if(RESULTFORMATitem[itemlist[j]] === 'Number' ){
+                    if (RESULTFORMATitem[itemlist[j]] === 'Number') {
 
                       dataobject['PO'] = datamaster['PO'];
-                      dataobject["itemlist"]=itemlist,
-           
+                      dataobject["itemlist"] = itemlist,
+
+                        dataobject['MATCP'] = datamaster['MATCP'];
+                      dataobject['CUSTOMER'] = datamaster['CUSTOMER'];
+                      dataobject['PART'] = datamaster['PART'];
+                      dataobject['PARTNAME'] = datamaster['PARTNAME'];
+                      dataobject['FG_CHARG'] = datamaster['FG_CHARG'];
+                      dataobject['dateG'] = datamaster['dateG'];
+
+                      //FG_CHARG
+
                       subpicdata = Object.keys(datamaster['FINAL'][inslist[i]][itemlist[j]])
                       let datasetraw = [];
-                      if(subpicdata.length>0){
-                
+                      if (subpicdata.length > 0) {
+
                         for (let k = 0; k < subpicdata.length; k++) {
                           let datainside = datamaster['FINAL'][inslist[i]][itemlist[j]][subpicdata[k]];
                           let datasetrawin = [];
                           for (let v = 0; v < datainside.length; v++) {
-                            datasetrawin.push(datainside[v]['PO3']);
+                            datasetrawin.push(datainside[v]['PO3'].replace("\n", "").replace("\r", ""));
                             // console.log(datainside)
-                            
+
                           }
                           datasetraw.push(datasetrawin);
                         }
@@ -118,28 +131,35 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
                       dataobject[itemlist[j]] = {
                         "name": itemobject[itemlist[j]],
                         "itemcode": itemlist[j],
-                        'RESULTFORMAT' : RESULTFORMATitem[itemlist[j]],
+                        'RESULTFORMAT': RESULTFORMATitem[itemlist[j]],
                         // "data": datamaster['FINAL'][inslist[i]][itemlist[j]],
-                        "data":datasetraw,
-                        "data_ans":datamaster['FINAL_ANS'][itemlist[j]],
+                        "data": datasetraw,
+                        "data_ans": datamaster['FINAL_ANS'][itemlist[j]],
                       }
 
-                    }else if(RESULTFORMATitem[itemlist[j]] === 'Graph' ){
+                    } else if (RESULTFORMATitem[itemlist[j]] === 'Graph') {
 
                       dataobject['PO'] = datamaster['PO'];
-                      dataobject["itemlist"]=itemlist,
+                      dataobject["itemlist"] = itemlist,
+
+                        dataobject['MATCP'] = datamaster['MATCP'];
+                      dataobject['CUSTOMER'] = datamaster['CUSTOMER'];
+                      dataobject['PART'] = datamaster['PART'];
+                      dataobject['PARTNAME'] = datamaster['PARTNAME'];
+                      dataobject['FG_CHARG'] = datamaster['FG_CHARG'];
+                      dataobject['dateG'] = datamaster['dateG'];
 
                       subpicdata = Object.keys(datamaster['FINAL'][inslist[i]][itemlist[j]])
                       let datasetraw = [];
-                      if(subpicdata.length>0){
-                
+                      if (subpicdata.length > 0) {
+
                         for (let k = 0; k < subpicdata.length; k++) {
                           let datainside = datamaster['FINAL'][inslist[i]][itemlist[j]][subpicdata[k]];
                           let datasetrawin = [];
                           for (let v = 0; v < datainside.length; v++) {
-                            datasetrawin.push(datainside[v]['PO3']);
+                            datasetrawin.push(datainside[v]['PO3'].replace("\n", "").replace("\r", ""));
                             // console.log(datainside)
-                            
+
                           }
                           datasetraw.push(datasetrawin);
                         }
@@ -148,19 +168,19 @@ router.post('/TOBEREPOR/GETDATASOI12', async (req, res) => {
                       dataobject[itemlist[j]] = {
                         "name": itemobject[itemlist[j]],
                         "itemcode": itemlist[j],
-                        'RESULTFORMAT' : RESULTFORMATitem[itemlist[j]],
-                        "data":datasetraw,
-                        "data_ans": datamaster['FINAL_ANS'][itemlist[j]+'_point'],
-        
+                        'RESULTFORMAT': RESULTFORMATitem[itemlist[j]],
+                        "data": datasetraw,
+                        "data_ans": datamaster['FINAL_ANS'][itemlist[j] + '_point'],
+
                       }
 
                     }
 
-                   
+
 
                     //----------------------------------------------------------------------------------------
                   }
-                 
+
 
 
                 }

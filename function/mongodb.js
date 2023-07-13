@@ -28,7 +28,8 @@ exports.find = async (db_input, collection_input, input) => {
 
   const db = client.db(db_input);
   const collection = db.collection(collection_input);
-  let res = await collection.find(input).limit(1000).sort({ "_id": -1 }).toArray();
+  // let res = await collection.find(input).limit(1000).sort({ "_id": -1 }).toArray();
+  let res = await collection.find(input).sort({ "_id": -1 }).toArray();
 
   await client.close();
 
